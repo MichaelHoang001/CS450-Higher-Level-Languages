@@ -1,0 +1,57 @@
+;; read-file produces a list whose elements are the expressions in the file.
+(define (read-file)
+  (let ((expr (read)))
+    (if (eof-object? expr)
+        '()
+        (cons expr (read-file)))))
+(define source (with-input-from-file "units.dat" read-file))
+
+;; the actual conversion func
+(define (convert a_Quantity b_Unitlist)
+  (let ((a_Num (car a_Quantity)) (a_Unitlist (cdr a_Quantity)))
+    (normalize (car a_Unitlist))
+    ;(search-source source (car a_Unitlist))
+  )
+)
+
+;; helper function to look up a unit from source
+(define (search-source req) ;; called with requested unit's name
+  (define (searchRecur node req)
+    (cond ((null? node) null)
+          ((equal? req (caar node)) (car node))
+          (else (searchRecur (cdr node) req))))
+  (searchRecur source req))
+
+;; normalize a unitlist into a baselist of 4 numbers: quantity, kg, m, sec
+(define (normalize in exp prior) ;; called with unitlist, its exponent
+  (define (nrmBase u)            ;; and any prior list 
+    (nrmRecur u (cdadr in)))
+  (define (nrmRecur u list)
+    (cond ((null? list) 0)
+          ((equal? u (caar list)) (* exp (cadar list)))
+          (else (nrmRecur u (cdr list)))))
+
+  (define nrmQuantity
+    (cond ((> exp 0) (* (car prior) (caadr in)))
+          (else (/ (car prior) (caadr in)))))
+  (list nrmQuantity                         ;; make a new list that is the
+         (+ (cadr prior)   (nrmBase 'kg))   ;; merging of this unitlist and
+         (+ (caddr prior)  (nrmBase 'm))    ;; any prior result. default to
+         (+ (cadddr prior) (nrmBase 'sec))));; a prior list of '(1 0 0 0).
+
+;; condense an entire custom quantity into a baselist
+(define (parse-custom-quantity quantity list-of-units)
+  (define (parseRecur baseL unitL) ;; condensed baselist tally, list-of-units
+    (cond ((null? unitL) baseL)
+          (else (parseRecur
+                 (normalize (search-source (caar unitL)) (cadar unitL) baseL)
+                 (cdr unitL)))))
+  (parseRecur (list quantity 0 0 0) list-of-units))
+
+
+                                        ;TESTING AREA
+;search-source 'furlong)
+;normalize (search-source 'furlong) 1 '(1 0 0 0))
+(parse-custom-quantity 27.5 '((furlong 1)(fortnight -1)(ft -2)))
+(parse-custom-quantity 1 '((mi 1)(hr -1)))
+;(convert '(27.5 (furlong 1)(fortnight -1)(ft -2)) '((mi 1)(hr -1)))

@@ -1,0 +1,85 @@
+        Exercise 1:
+1.11 (page 53)
+
+     RECURSIVE
+
+This one seemed very easy, considering it is just a few
+changes from the fibonacci code in Lecture 2. All I had
+to do was change the cond to fit the current function.
+
+The base cases for the fibonacci sequences are (= n 0)
+and (= n 1), so all I had to do was change that to the
+new (< n 3).
+
+The else case for the cond was just a simple matter of
+me transcribing the formula into scheme.
+
+In order to test both this program and the iterative
+program, I simply repeated (recur 0) (recur 1) (recur 2)
+and so on and so forth to get the first 8 responses,
+then I verified the responses with a calculator.
+
+(define (recur n)
+  (cond ((< n 3) n)
+        (else (+ (recur (- n 1)) (* 2 (recur (- n 2))) (* 3 (recur (- n 3)))))
+))
+
+
+     ITERATIVE
+
+This one was a bit harder since the fibonacci program
+is recursive and not iterative. I instead used the
+fib-iter examples to guide my way. To me, this was
+counter-intuitive and I did not fully understamd
+fib-iter to begin with. I had always though of these
+sort of problems as recursive, and will need to work
+more on understanding how to solve them iteratively.
+
+I hard coded the cases where (< n 3), as they would
+not follow the iterative formula.
+
+(define (tri n)
+  (define (tri-iter n-1 n-2 n-3 count)
+    (if (= count 0)
+        n-2
+        (tri-iter (+ n-1 (* 2 n-2) (* 3 n-3)) n-1 n-2 (- count 1)))
+  (if (< n 3)
+      n
+      (tri-iter 2 1 0 (- n 1))))
+
+
+1.12 (page 54)
+
+A very tricky problem, given that it must do recursion
+over two dimensions. First, I set up the base cases.
+I have the cond statement go over two base cases:
+
+The first if (= e 0), which signifies the leftmost
+entry in a row. This is necessarily a 1.
+
+The second if (= e r), which signifies the rightmost
+entry in a row, such that the entry index is equal to
+the row index - there can never be more entries than
+the row's index. This is also necessarily a 1.
+
+Then, I recurse normally. I know that each number is
+merely the sum of two prior numbers - one to the
+top left, one to the top right. If I visualize the
+triangle as left-justified, then 'top right' simply
+becomes 'top'. As such, I call the recursion first
+on the number to the top and to the right, and then
+on the number to the top, but without moving the
+entry index.
+
+(define (p r e)
+  (cond ((= e 0) 1)
+        ((= e r) 1)
+        (else (+ (p (- r 1) (- e 1)) (p (- r 1) e)))))
+
+This program was tested by calling the function against
+the 3 examples given on the worksheet, with one more
+for good measure:
+(p 0 0) = 1
+(p 2 1) = 2
+(p 4 2) = 6
+(p 8 2) = 28

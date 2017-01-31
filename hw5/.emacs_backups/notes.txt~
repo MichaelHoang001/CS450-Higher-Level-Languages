@@ -1,0 +1,188 @@
+First thing I did was look around for actual examples of how to make a stream.
+Perhaps it is my own lack of reading comprehension, but Lecture 10 doesn't
+actually give an example of how to make a finite stream. I ended up using one
+I found online to test programs:
+
+(define (intfromn n)
+  (cons-stream n (intfromn (+ n 1))))
+(define integers (intfromn 1))
+
+--------------------------------------------------------------------------------
+        1
+
+Problem one went by without a hitch, but as I mentioned, finding proper testing
+material was a bit of a pain.
+
+--------------------------------------------------------------------------------
+        2
+
+Problem two took a bit of thinking because I wasn't completely sure what the
+function was supposed to do, and I needed to refresh my memory on what the
+difference between apply and map were, as well as understand what the function
+would return. I ended up testing it correctly:
+
+(define ints+10 (stream-map (lambda (x) (+ x 10)) integers))
+(display-n ints+10 5)
+
+1. What is the purpose of the apply and the cons in the last two lines of the
+procedure? Why could you not just leave them out and replace the las
+two lines by the line (stream-map proc (map <??> argstreams))))
+
+The apply is required to properly use the procedure over the argstreams
+(apply proc '(stream1 stream2 stream3)) = (proc stream1 stream2 stream3)
+If we did not use apply, then we could be left with
+(proc (list stream1 stream2 stream3)), and it would error out since there are
+too few arguments.
+
+The cons is required due to stream-map allowing an indeterminate amount of
+arguments, and requires all arguments to be passed in as a pair, where that
+pair is:
+
+(car pair) = proc
+(cdr pair) = list-of-argstreams
+
+2. What about replacing the last two lines by this:
+(apply stream-map proc (map <??> argstreams))))
+
+Since this doesn't have the cons, stream-map doesn't get a pair and thus has
+too many arguments
+
+--------------------------------------------------------------------------------
+        3
+
+notdiv-235 was simple, but I needed a little bit of thought as to how I'd
+organize the many divisions, and settled on a helper functionr ather than a
+lambda function that other examples use.
+
+--------------------------------------------------------------------------------
+        4
+
+Reminder to self:
+m        = 87
+a        = (10 * previous-a) + (m * inStrPull)
+a-list   = expand a, leftpad with zeroes: ensure a-list.size > prev-a-list.size
+pow      = power of 10, same digits as a-list
+
+consume  = push digit from inStr to a & a-list
+produce  = pull digit from a-list to outStr
+
+action   = determine when to consume or produce:
+           m + (a % pow) <  pow : produce
+           m + (a % pow) >= pow : consume
+           a-list is empty      : consume
+
+
+           OutStr       a       a-list          pow     InStr
+           ()           0       ()              -       (9 8 7 4 3 6 9 1 7)                
+a-list is empty; consume
+           ()           783     (7 8 3)         100       (8 7 4 3 6 9 1 7)
+87 + 83 >= 10; consume
+           ()           8526    (8 5 2 6)       1000        (7 4 3 6 9 1 7)
+87 + 526 < 1000; produce
+           (8)          526     (5 2 6)         100         (7 4 3 6 9 1 7)
+87 + 26 >= 100; consume
+           (8)          5869    (5 8 6 9)       1000          (4 3 6 9 1 7)
+87 + 869 < 1000; produce
+           (85)         869     (8 6 9)         100           (4 3 6 9 1 7)
+87 + 69 >= 100; consume
+           (85)         9038    (9 0 3 8)       1000            (3 6 9 1 7)
+87 + 38 < 1000; produce
+           (859)        38      (0 3 8)         100             (3 6 9 1 7)
+87 + 59 >= 100; consume
+           (859)        641     (0 6 4 1)       1000              (6 9 1 7)
+87 + 641 < 1000; produce
+           (8590)       641     (6 4 1)         100               (6 9 1 7)
+87 + 41 >= 100; consume
+           (8590)       6932    (6 9 3 2)       1000                (9 1 7)
+87 + 932 >= 1000; consume
+           (8590)       70103   (7 0 1 0 3)     10000                 (1 7)
+87 + 103 < 10000; produce
+           (85907)      103     (0 1 0 3)       1000                  (1 7)
+87 + 103 < 1000; produce
+           (859070)     103     (1 0 3)         100                   (1 7)
+87 + 3 < 100; produce
+           (8590701)    3       (0 3)           10                    (1 7)
+87 + 3 >= 10; consume
+           (8590701)    117     (1 1 7)         100                     (7)
+87 + 17 >= 100; consume
+           (8590701)    1779    (1 7 7 9)       1000                     ()
+InStr empty; dump a-list
+           (85907011779)779     (7 7 9)         100                      ()  
+done
+           0.987436917 * 87 = 85.907011779
+
+
+As for the actual function, that was a bit harder. I really appreciate being
+made to complete the table, it gave me a strong understanding of what the
+algorithm did in its entirety. Between the clear example of what each step
+of the algorithm loosk like and the pseudocode provided for us, I managed
+to write up the code very well, but it's particularly hard to read and I
+needed many helper methods.
+
+I tried to test it on the example given to us in the book:
+(mult-stream 87 '(9 8 7 4 3 6 9 1 7))
+but it just froze up, locked in some infinite loop without any way to debug
+the program. I tested again with a much smaller test:
+(mult-stream 4 '(2 3 7))
+but that brought up some more problems - instead of returning '(9 4 8) as
+expected, it returned '(9 2 4 8), and I did the algorithm out by hand to see
+where this 2 came from.
+
+Turns out the first produce call turns (out:())(a:92) into (out:9)(a:2), and
+that must be where it's messing up. In its produce, it may be putting out
+one too many digits, but I couldn't for the life of me figure out how.
+
+A bit of debugging shows that produce (or action?) had a faulty condition,
+and (out:9)(a:2) was reading as a produce, and not a consume. And all of
+this came from faulty testing of my helper function that determined pow.
+
+I didn't test parsepow enough, as it turns out that the culprit was just a
+typo. Instead of (- i 1), I had (- 1 i), and so the base case of (= i 0)
+was never reached, and all sorts of terrifying things happened.
+
+And all sorts of terrifying things happened after that! Instead of the answer
+simply being off by one, I got a floating point error, and I can't imagine
+where a floating point would even exist in the first place.
+
+Turns out, it was just more typoes! I made a quick function for debugging:
+(define (out x . y)
+  (newline)
+  (display x)
+  (map (lambda (q) (display " ") (display q)) y))
+and ran this after every line to see how far the program could go before
+seizing up, and to see what the variables were during then. I hoped that
+UMB Scheme had a proper debugging function, but this will have to do - I'll
+be sure to make use of this in future programs. The typo I found was that
+I updated pow based on the previous a-list, and not the current a-list.
+This took entirely too many hours of struggling.
+
+After that, though, I was done! Testing with both of the previous mentioned
+test cases worked perfectly, and I ran
+(display-n (mult-stream 87 '(9 8 7 4 3 6 9 1 7)) 20)
+just to be extra sure.
+
+--------------------------------------------------------------------------------
+        5
+
+2+1/3( 3 ) = 3.00000
+2+1/3( 2+2/5( 3 )) = 3.066667
+2+1/3( 2+2/5( 2+3/7( 3 ))) = 3.104762
+2+1/3( 2+2/5( 2+3/7( 2+4/9( 3 )))) = 3.12381
+2+1/3( 2+2/5( 2+3/7( 2+4/9( 2+5/11( 3 ))))) = 3.133045
+2+1/3( 2+2/5( 2+3/7( 2+4/9( 2+5/11( 2+6/13( 3)))))) = 3.137485
+
+I did this in an excel sheet, automatically filling in as many steps as
+required.
+
+
+Answer the following question (in notes.txt): What is the matrix corresponding
+to the fractional linear transformation that takes x as input, adds 3 to it,
+and then takes the reciprocal of the result?
+
+  _1_
+  x+3
+
+| 0 1 |
+|     |
+| 1 3 |
+

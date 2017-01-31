@@ -1,0 +1,107 @@
+(begin
+                                        ;set up infrastructure
+;; read-file produces a list whose elements are the expressions in the file.
+(define (read-file)
+  (let ((expr (read)))
+    (if (eof-object? expr)
+        '()
+        (cons expr (read-file)))))
+(define data (with-input-from-file "dist.dat" read-file))
+
+;; copied from lecture 9
+(define (assoc key records)
+  (cond ((null? records) #f)
+        ((equal? key (caar records)) (car records))
+        (else (assoc key (cdr records)))))
+(define (lookup-1d key table)
+  (let ((record (assoc key (cdr table))))
+    (if record
+        (cdr record)
+        #f)))
+(define (insert!-1d key value table)
+  (let ((record (assoc key (cdr table))))
+    (if record
+        (set-cdr! record value)
+        (set-cdr! table
+                  (cons (cons key value) (cdr table)))))
+  'ok)
+(define (lookup-2d key-1 key-2 table) 
+  (let ((subtable (assoc key-1 (cdr table))))
+    (if subtable
+        (let ((record (assoc key-2 (cdr subtable))))
+          (if record
+              (cdr record)
+              #f))
+        #f)))
+(define (insert!-2d key-1 key-2 value table)
+  (let ((subtable (assoc key-1 (cdr table))))
+    (if subtable
+        (let ((record (assoc key-2 (cdr subtable))))
+          (if record
+              (set-cdr! record value)
+              (set-cdr! subtable
+                        (cons (cons key-2 value)
+                              (cdr subtable)))))
+        (set-cdr! table
+                  (cons (list key-1
+                              (cons key-2 value))
+                        (cdr table)))))
+  'ok)
+
+;; initialize the two tables
+(define node-node-2d (list '*table*))
+(define node-end-1d (list '*table*))
+
+                                        ; done with table infrastructure
+                                        ; populate node-to-node table for use
+;; for each entry in data, put its information into the 2d table
+(map (lambda (x) (insert!-2d (car x) (cadr x) (caddr x) node-node-2d)) data)
+
+                                        ; now actual code
+;; helper function to append to a list, will be needed for keeping track of path
+(define (appendlist! _x _list)
+  (define (find-last-element _element)
+    (cond ((null? (cdr _element)) _element)
+          (else (find-last-element (cdr _element)))))
+    (set-cdr! (find-last-element _list) (list _x)))
+
+;; main function
+;; returns the minimum path from node to 'end
+(define (cost node)
+  ;; iterates through data to populate a list of a node's children
+  ;; returns a list of the names of children
+  (define (findchildren node source list)
+    (cond ((null? source) list)
+          ((equal? (caar source) node)
+                 (findchildren node (cdr source) (cons (cadar source) list)))
+           (else (findchildren node (cdr source) list))))
+  ;; recursion powerhouse, this function parses its children and delves for 'end
+  ;; returns a number - the minimal cost to end
+  (define (expandnode child)
+    (let ((endcost (lookup-1d child node-end-1d)))
+      (if (eq? endcost #f)
+          (+ (lookup-2d node child node-node-2d) (cost child))
+          endcost)))
+  ;; helper function to return the minimum of a list, used in conjunction with
+  ;; the internal mapped list of parse
+  (define (minoflist list)
+    (cond ((null? list) 1000000)
+          (else (min (car list) (minoflist (cdr list))))))
+  ;; maps expandnode over the list of children, then gets the minimum cost from
+  ;; all the children. records this mincost in the 1d table.
+  (define (parse children)
+    (minoflist (map expandnode children)))
+
+  ;; actual code, parses through all the node's children unless in special
+  ;; cases where it is 'end or if it lacks children
+  ;; returns the minimum path to end
+  (if (eq? node 'end)
+      0
+      (let ((children (findchildren node data '())))
+        (if children
+            (parse children)
+            1000000))))
+
+(cost 'start)
+)
+

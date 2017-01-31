@@ -1,0 +1,239 @@
+<head>
+<link href="../../stylesheets/defaults.css" rel="stylesheet" type="text/css"/>
+<title>
+CS 450 Homework 1
+</title>
+</head>
+
+<body>
+<b>CS 450 Homework 1</b><br/>
+Bill Campbell*<br/>
+Spring 2016<br/>
+
+<p>*due to Carl Offner, from a similar assignment due to Prof. Bolker.</p>
+
+<br/>
+<b>Part I. Due Wednesday, January 27, in class.</b>
+
+<ol>
+  <li>Apply for a department Unix account in the usual way.
+  Do that even if you already have a Unix account, so that
+  you can tell the system that you are enrolled in this course.
+  Do not <b>ever</b> change the protections on this account (or on any
+  files or subdirectories in it).</li>
+
+  <li>Read pages 1-21 of the text (Abelson and Sussman's Structure and
+  Interpretation of Computer Programs) once over lightly, and try not to worry
+  about what doesn't seem clear.  Answer the following 4 exercises (and note
+  that the third one has a number of parts to it):</li>
+
+  <ol>
+    <li> 1.1 (page 20)  Work this out with pencil and paper, thinking it through by
+    yourself <b>before</b> you run Scheme to see what it really does.  Then evaluate
+    these expressions in Scheme to make sure you got them right. </li>
+
+<!--
+    <li> 1.4 (page 21) I'm looking for an answer here that tells me more than "first
+    do this, then do that".  I know how to read code; you don't have to tell me.
+    What I want to know is this: what's the point of this function?  What does it
+    really do?  What would you use it for?  Something like that.</li>
+-->
+
+<!-- moved from part 2 in 2009 -->
+    <li> 1.6 (page 25). Note that this exercise calls for an 
+    explanation, not a program.</li>
+
+    <li> (Call this <b>Problem A</b> on your paper, so I'll know which one it
+    is.) Suppose we have this code: 
+<pre>
+    (define (f x) (* x x))
+</pre>
+    <ol>
+      <li> What is this turned into internally when the Scheme interpreter reads
+      this definition?</li>
+
+      <li> Given this definition, and given the following expression
+  <pre>
+       (f (+ 3 5))
+  </pre>
+      <ol>
+        <li> Show how this expression is evaluated using applicative-order
+        evaluation.</li>
+        <li> Show how this expression is evaluated using normal-order
+        evaluation.</li>
+      </ol>
+    </ol>
+
+    <li> For extra credit: 1.5 (page 21).</li>
+    <!-- end of the two items moved in 2009 -->
+
+  </ol>
+</ol>
+
+<p>To test your answers and your understanding you will want to be able
+to play with Scheme while you read the text.  To run the UMB Scheme
+interpreter simply type</p>
+
+<pre>
+	% scheme
+</pre>
+
+<p>at the Unix prompt. Then enjoy.</p>
+
+<p>To work with a file of Scheme code rather than simply typing at the
+Scheme prompt you can redirect input (and output) with</p>
+
+<pre>
+	% scheme < somefile.scm > somefile.out
+</pre>
+
+<p>or <tt>(load "somefile.scm")</tt> while in Scheme.</p>
+
+<p><b> Note:</b> Your answers to the exercises should come along with (or
+be incorporated in) a short essay in which you discuss what you
+discovered about Scheme. How does it compare to other languages you
+know? Did any of its responses surprise you? What is the largest
+integer Scheme will handle?  What message appears when you type '+' at
+the Scheme prompt (and what does the message mean)? What other
+experiments did you perform?  What do you like or dislike (so far)
+about Scheme?</p>
+
+<p>This essay and the others I will regularly ask for are an
+important part of how you learn, and an important part of your
+grade. I usually read them <b>before</b> I read your code. So take
+them seriously.</p>
+
+</ol>
+
+<br/>
+<p><b>Part II. Due Monday, February 1, 5:00 PM.</b> <br/>(Collected
+electronically.)</p>
+
+<p>When your application for a Unix account for this course was
+processed, a <tt>cs450</tt> subdirectory of your home directory was
+created for you. You are to do all your work for this course there. Do
+not <b>ever</b> change the protections on this directory (or on any
+files or subdirectories in it).</p>
+
+<p>Create a 
+<tt>hw1</tt> subdirectory of your <tt>cs450</tt> directory. Do your
+work for this assignment there.</p>
+
+<p>Emacs knows about Scheme. It edits files with the <tt>.scm</tt> extension in
+<tt>Scheme mode</tt>. In that mode, the <tt>tab</tt> key will indent code
+correctly.  If you are not an emacs user you should definitely learn that editor
+now. It's much more powerful than vi; that power will save you lots of
+programming time.</p>
+
+<p>One of the reasons I'm making a big point of this is that your code needs to
+be indented properly so that it can be understood.  I (and the grader as well)
+have to be able to read your code and understand it.  If the indentation is
+messed up, I can't do this, and I will definitely take off points.  I'm not
+trying to be mean about this.  This is just an important thing that you have to
+be able to do.</p>
+
+<p>And by the way, I occasionally have students who try to do their work in
+Microsoft Word and then somehow turn it back into plain text.  They end up
+wasting an incredible amount of time doing this, and their work looks like a
+mess.  Don't fall into this trap.  Use emacs, and if you need help, just ask me,
+or send me email.</p>
+
+<p>Rapidly read through the Scheme language report ("Revised<sup>5</sup>
+Report on the Algorithmic Language Scheme"; this is usually referred
+to as "R5RS"). Do not try to learn everything that's there. Skip all
+the hard parts. Use this reading to learn the kinds of things that can
+be found there, so you can look things up when you need to.</p>
+
+<p>Put the answers to the exercises listed below in a file named <font
+color=blue><tt>ASanswers.txt</tt></font> in your <tt>hw1</tt> directory.  Your
+answers should be written out in complete paragraphs. Your work should be
+sufficiently self contained so that three months from now you will be able to
+look at them and understand them without having to go back to the book to see
+what the question was, or the point of the question.</p>
+
+<p>This file should be a plain ASCII text file.  You will have to rely on white
+space for formatting. I am not going to deal with any files that contain extra
+or hidden formatting characters, whether it is Microsoft Word or HTML.  And
+please make sure that all your lines in this file are 80 characters or less in
+length.  If you put this line</p>
+
+<pre>
+    (setq-default fill-column 80)
+</pre>
+
+<p> in your <tt>&#126;/.emacs</tt> file, this will help you.  But you still have
+to make sure that your lines haven't run over.  (And yes, I really mean this.
+I'm taking off points if lines run over.  If you don't know what I mean, ask me
+or send me email.)</p>
+
+<p>Remember that unix file names are case sensitive.  Here are three file
+names that are incorrect:</p>
+<ul>
+<li> <tt>asanswers.txt</tt> <font color=red>WRONG!</font></li>
+<li> <tt>ASanswer.txt</tt> <font color=red>WRONG!</font></li>
+<li> <tt>ASanswers.doc</tt> <font color=red>WRONG!</font></li>
+</ul>
+<p>Do you see what is wrong with each of them?  If you name your file
+even slightly incorrectly, my collecting script will not find it, and
+I will never see your homework.  <em>It is not my responsibility to go
+rummaging around in your directory to try to figure out what you have
+named your files.</em>  So please be careful with filenames.  It will
+save us both a lot of grief.</p>
+
+<p>Here are the exercises you should do:</p>
+<ol>
+<!-- moved to part 1 in 2009
+  <li> 1.6 (page 25). Note that this exercise calls for an 
+  explanation, not a program.</li>
+-->
+
+<!--
+  <li> 1.9 (page 36). You have to justify your answer in each case.  Please
+  write clearly.  A good way to tell if you have answered this question correctly
+  is this: would you understand it if someone else explained it to you this way?
+  That's the way I'm going to judge it, anyway.</li>
+-->
+
+  <li> 1.11 (page 42). Be sure to discuss how you tested your
+  procedure.</li>
+
+  <li> 1.12 (page 42).  To be precise, let us define the function <tt>p</tt>
+  for "Pascal" which takes two arguments:
+  <pre>
+  r -- the row number
+  e -- the element number in the row
+  </pre>
+  So <tt>(p r e)</tt> is the value of element <tt>e</tt> in
+  row <tt>r</tt>.  And we number the rows starting from 0, and we also number
+  the elements in each row starting from 0.  (That is the usual convention.)
+  Thus for instance,
+  <pre>
+  (p 0 0) evaluates to 1
+  (p 2 1) evaluates to 2
+  (p 4 2) evaluates to 6
+  </pre>
+  and so on.  The problem then is to write a recursive Scheme procedure for the
+  function <tt>p</tt>.
+ </li>
+
+<!--
+  <li> For extra credit: 1.16 (page 46). Be sure to discuss design
+  and testing.</li>
+-->
+
+  <li> For extra credit: 1.17 (page 46).  Be sure to discuss design and
+  testing.</li>
+
+<!-- moved to part 1 in 2009
+  <li> For extra credit: 1.5 (page 21).</li>
+-->
+</ol>
+
+And when I say, "Be sure to discuss design and testing", I really mean it.  You
+should be able to write something interesting and meaningful, and it should be
+longer than just a few sentences.  If you can't think of anything to write, then
+you probably haven't thought enough about these problems.  In any case, please
+do feel free to contact me by email with any questions.
+
+</body>
+</html>

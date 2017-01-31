@@ -1,0 +1,332 @@
+<head>
+<link href="../../stylesheets/defaults.css" rel="stylesheet" type="text/css"/>
+<title>
+CS 450 Homework 6
+</title>
+</head>
+
+<body>
+<b>
+CS 450 Homework 6
+</b>
+<br/>
+The metacircular evaluator
+<br/>
+Bill Campbell (verbatim from Carl Offner)
+<br/>
+Spring 2016
+<p/>
+<b>
+Due Sunday, April 3 at 11:59 PM (collected electronically).
+</b>
+<p>This assignment consists of reading, understanding, and modifying the
+metacircular evaluator in Chapter 4 of Abelson and Sussman.  The
+assignment has lots of pieces. Be sure you start early. Moreover, some
+of the things you need to do are more subtle than you may first think.</p>
+
+<p>Copy file ~offner/cs450/hw6/s450.scm to your <tt>hw6</tt> subdirectory.  That
+file contains all the relevant code from A&S, with small changes so that it runs
+in UMB Scheme.  The name of the evaluator has been changed to <tt>s450</tt>.
+The invoking function is now <tt>(s450)</tt>, not <tt>(driver-loop)</tt>.  This
+is the file we have been discussing in class.</p>
+
+<p>You will create two files (which I will collect):
+<ul>
+<li> <tt>s450.scm</tt> This will be the (commented) scheme code that
+you write.  It will be an edited version of the original
+<tt>s450.scm</tt>.</li>
+
+<li> <tt>notes.txt</tt> This is for more discursive comments and
+discussion about the decisions you made in implementing the code for
+these problems, how you tested the code, and anything else that might
+be relevant.</li>
+</ul>
+
+<div id="narrow_emph_border">
+
+  <b>IMPORTANT: Testing your code will be crucial.  Test everything as you build
+  it.  Do not wait till you have finished coding the assignment to start
+  testing.  Keep careful notes.  You will undoubtedly be surprised by some
+  things, or have difficulty understanding what is going on in some cases.  You
+  should report all of this in <tt>notes.txt</tt>.</b></p>
+
+</div>
+
+<ol>
+
+<li>(You should have already done this.) Play with the s450
+evaluator:
+
+<pre>
+% scheme s450.scm
+==> (s450)
+s450==> ...
+</pre>
+or
+<pre>
+% scheme
+==> (load "s450.scm")
+==> (s450) 
+s450==> ...
+</pre>
+See how much of real Scheme is there. Write (in <tt> notes.txt</tt>)
+about what you found.</li>
+
+<li><p>Rewrite <tt>xeval</tt> so that the handling of special forms is data
+directed.  (This is Exercise 4.3 on page 374.)  For each special form
+( <tt> lambda</tt>, <tt> set!</tt>, <tt> cond</tt>, <tt> define</tt>,
+<tt> quote</tt>, ...  ) there is an appropriate semantic action&#8212;a
+scheme procedure A&S have already written.  If you put those actions
+in a lookup table keyed by the symbol representing the special form
+then the cond in <tt> xeval</tt> will be much shorter, with a single
+table lookup for almost all the cases now listed separately.  And you
+will be able to add special forms to s450 without editing <tt>
+xeval</tt>, which will now look something like this (in pseudocode):</p>
+
+<pre>
+   let action = (lookup-action (type-of expression))
+       if lookup succeeded
+        invoke action, passing it the expression and the environment
+        else cond ... ;; check for a few other types of expressions
+
+</pre>
+
+<p>You should write scheme functions like <tt> lookup-action</tt> and
+<tt>type-of</tt> to hide the lookup table implementation. (There are
+various ways to build a lookup table.  You might want to review
+Section 3.3.3 (pages 266--271) for some ideas.)</p>
+
+<p>There's nothing fancy going on here.  And <tt>type-of</tt> is an extremely
+simple procedure that just helps to figure out which special form you're dealing
+with.  It's very similar to the way the <tt>cond</tt> expression works in the
+original <tt>xeval</tt>.  It's that simple.</p>
+
+<p>To insert a new special form in the table write the procedure
+<tt> install-special-form</tt> and call it this way (for example):
+<pre>
+==> (install-special-form 'set! (lambda (exp env) ... ) )
+</pre>
+</p>
+
+<p>Since <tt> install-special-form</tt> is not a special form in scheme,
+its first argument will be evaluated, and therefore generally needs to
+be quoted, as in the example above, to prevent this. (Indeed, it is
+possible to call <tt>install-special-form</tt> with the first
+argument being an unquoted expression that evaluates to the symbol for
+the form you are installing.)  The second parameter, <tt>action</tt>, should be
+a lambda expression (or something that evaluates to a lambda
+expression) that takes <b>two</b> parameters, <tt>exp</tt> and <tt>env</tt>.
+<tt>xeval</tt> in s450 will arrange to pass those parameters when
+action is called.  Since <tt> install-special-form</tt> is not a
+special form, that lambda expression will be evaluated in the
+environment in which <tt> install-special-form</tt> is called before
+being passed to the body of <tt>install-special-form</tt>.</p>
+
+<p>Since <tt>install-special-form</tt> is called only for its side
+effect, it returns no useful information.  However, to avoid
+generating garbage, have it return the name of the special form being
+installed.</p>
+
+<p>Your implementation should ensure that a new special form cannot be
+installed using the name of a variable that is already defined.</p>
+
+<p>Similarly, a special form (that is already in the table) cannot be
+"reinstalled" using <tt>install-special-form</tt>.</p>
+
+<!-- <p>Optional: If you can, arrange matters so you can call <tt> -->
+<!-- install-special-form</tt> both from the scheme prompt before starting -->
+<!-- the s450 interpreter and from inside the s450 interpreter, so that you -->
+<!-- can install a new special form in a running interpreter. If you do -->
+<!-- this, <tt> install-special-form</tt> must be called exactly the same -->
+<!-- way inside as out. (But I will only test calling it with a quoted -->
+<!-- first argument.)  It's up to you to decide whether inside s450 <tt> -->
+<!-- install-special-form</tt> should be a special form or a primitive -->
+<!-- procedure.</p> -->
+
+<p>Once you have written <tt> install-special-form</tt> you can save yourself lots
+of time typing at the <tt> s450==></tt> prompt to test your code by installing
+<tt> load</tt> as a special form. The code you need is in
+~offner/cs450/hw6/load.s450.</p>
+
+<p>If you do this, <b>please</b> include the text of <tt>load.s450</tt>
+in your file <tt>s450.scm</tt>.  Don't <tt>(load "load.s450")</tt>.</p>
+</li>
+
+<li>In s450 now, entering the name of a special form at the prompt causes
+a crash.  Fix things so that instead a message is generated, like
+this:
+<pre>
+        s450==> if
+        Special form:  if
+</pre>
+</li>
+
+<li>Fix things so that the name of a special form cannot be redefined or
+assigned to.  That is, we should not be able to get away with typing
+<pre>
+        s450==> (define if 3)
+</pre>
+or
+<pre>
+        s450==> (set! if 3)
+</pre>
+</li>
+
+<li>Write and install the following new special forms:
+<br/>
+<center>
+<table border cellpadding=8 width=90%>
+<tr>
+<td>
+<tt>(defined? &lt;symbol&gt;)</tt>
+</td>
+<td>
+returns <tt>#t</tt> iff the <tt>&lt;symbol&gt;</tt> is defined in the
+current environment.
+</td>
+</tr>
+<tr>
+<td><tt>(locally-defined? &lt;symbol&gt;)</tt></td>
+<td> returns <tt> #t</tt> iff the <tt>&lt;symbol&gt;</tt> is defined in the
+first frame of the current environment.</td>
+</tr>
+<tr>
+<td><tt> (make-unbound! &lt;symbol&gt;)</tt></td>
+<td> removes the <tt>&lt;symbol&gt;</tt> binding(s) from the current
+environment.</td>
+</tr>
+<tr>
+<td> <tt> (locally-make-unbound! &lt;symbol&gt;)</tt></td>
+<td>remove the <tt>&lt;symbol&gt;</tt> binding from the first frame of the
+current environment.</td>
+</tr>
+</table>
+</center>
+
+<p>(These last two special forms constitute Exercise 4.13 on p. 380 with
+the issue raised there resolved.)</p>
+
+<p><tt>locally-make-unbound!</tt> should not report an error if the
+<tt>&lt;symbol&gt;</tt> is not locally bound to begin with.  There is just
+nothing to do in that case.</p>
+
+<p>Design a way to test these four new special forms. Hint: in order to
+create a situation in which the local and global versions of your new
+special forms should behave differently, you will have to build some
+environments with more than one frame.  The only way to do that from
+the s450 prompt is by applying a procedure.  (And see the note above
+about loading s450 test files.)  For instance, you might try defining
+something like this within s450:</p>
+<pre>
+   (define f
+      (lambda (a b)
+        (display (locally-defined? a))
+        (display (locally-defined? b))
+        (locally-make-unbound! a)
+        (locally-make-unbound! b)
+        (display (locally-defined? a))
+        (display (locally-defined? b))
+        )
+      ) 
+</pre>
+<p>and then executing <tt>(f 3 4)</tt>.  What should happen?  And there are more
+complex expressions you could create.  You should do that as well.</p>
+</li>
+
+<li>Clean up the way primitive procedures are installed in s450:  write a
+procedure <tt>install-primitive-procedure</tt> that can be called like
+this:
+<pre>
+         (install-primitive-procedure <code><</code>name<code>></code>  <code><</code>action<code>></code>)
+</pre>
+For instance,
+<pre>
+         (install-primitive-procedure 'car car)
+</pre>
+<p>This procedure should insert the definition of the primitive procedure
+directly in the global environment.  Make sure that it is impossible
+to reuse the name of a special form for the name of a primitive
+procedure.</p>
+
+<p>Note that as before, since install-primitive-procedure is not a
+special form, the name generally needs to be quoted.</p>
+
+<p>As in the case of <tt>install-special-form</tt>, this procedure is
+called purely for its side effect, so it does not return a useful
+value.  However, to avoid generating a lot of garbage, have it return
+the name of the primitive procedure being installed.</p>
+
+<div id="narrow_emph_border">
+
+  <p><font color=red><b>This is important!</b></font> After you have done this,
+  change the startup code so that all the primitive procedures are created by
+  calls to <tt>install-primitive-procedure</tt>.  <b>And then be sure to delete
+  the original code that defined the primitive procedures.</b>  So in
+  particular, you should not have the variables
+
+  <pre>
+     primitive-procedures
+     primitive-procedure-names
+     primitive-procedure-objects
+  </pre>
+
+  in your code.  Please make sure they are no longer in your code; I'm going to
+  check for that.</p>
+
+  <p> If you don't understand what I mean here, please get in touch with me.
+  This is a small thing you need to do, but if you don't do it, my tests just
+  won't work.</p>
+
+</div>
+
+<p>Then install <tt>+</tt> and some other scheme procedures of your choice as
+primitive procedures in s450. Note that a primitive procedure in s450 does not
+have to be primitive in the underlying scheme.</p> </li>
+
+</ol>
+
+
+<hr>
+<p/>
+<b><center>
+Some Friendly Warnings
+</center></b>
+<ul>
+<li> My testing script relies heavily on <tt>install-special-form</tt>
+and <tt>install-primitive-procedure</tt>.  So you have to make sure
+that you have implemented them.  If you haven't, I won't be able to
+test your code.  <b><font color=red>This is important.  I don't care how good the
+rest of your code is.  If these two procedures don't work, nothing
+else will make sense.</font>  If you need help, ask me for it, and please ask
+early.</b></li>
+
+<li> <p>You will be making extensive changes to the file <tt>s450.scm</tt>;
+please make frequent backups, and make sure your code is clean and
+understandable.  This is by no means a trivial matter of last-minute cleanups:
+you will probably end up moving large amounts of code from one part of the file
+to another, and introducing whole new sections of code.  Your code (and your
+<tt>notes.txt</tt> file) has to be written so that
+
+<ul>
+<li> You can understand it now.</li>
+<li> I can understand it now.</li>
+<li> You will be able to understand it in six months.  (And don't kid
+yourself:  this is a stringent test.)</li>
+</ul></p>
+
+<p> You will be using your code as the starting code for the next assignment
+(Yes! I really meant that!), so it has to be absolutely clearly written.</p>
+
+<p> And to say again something I've said before: when you write this code (and
+these notes), don't imagine that you are the student and I am the teacher.
+Instead, imagine that you are a senior programmer in some company who has
+developed this code, and that you are about to move on to a different project.
+Imagine that I am a junior programmer who has just been hired to take over your
+code.  I don't understand very much about it (or anything else) at all, and the
+only thing I have to go by is the notes and comments that you have written, as
+well as the code itself, which therefore also has to be clear and
+well-formatted.</p></li>
+
+</ul> 
+</body> 
+</html>

@@ -1,0 +1,45 @@
+Oooh boy, this one was a doozy.
+
+My first strike against this beast of a problem was to work with what I had:
+the read-file function, and the units.dat file. I tested that out by creating
+source, then running a ton of car and cdr and cadadadr tests just to see what
+source looked like. I ended up needing to draw it all on paper just to be able
+to visualize everything.
+
+I started the actual code with a helper function, search-source. It is a quick
+function that loops recursively over a list to find a given unit, such as 'ft
+or 'joule, by starting with source and working its way down. It was a simple
+function, but let me dig around source a bit better. Now that I could easily
+access a given unit definition, I did more digging by brute-forcing multiple
+car and cdr commands to find out how the true unit definitions were built.
+
+I had no idea they'd be so confusing. It would make sense to build them as a
+simple list, but this is probably just a side effect of the read-file function
+being rather simple and not very sophisticated. The structure seemed to ebb
+and flow and looked like the sporadic roots of a plant, rather than a neat
+list structure. I couldn't even explore all the way without having to make a
+new list definition halfway through, due to scheme only allowing the chaining
+of up to 4 car/cdr commands.
+
+In a (probably misguided) attempt to wrap my head around all of this, I made
+a normalize function that took in a unitlist and broke it down into a list
+of 4 simple numbers: Its quantity, exponent of KG, exponent of M, and exponent
+of SEC. Base units that were not represented were given with an exponent of 0.
+This was SO much work. I wrote and rewrote and trashed dozens of preliminary
+functions. It was hard to wrap my head around the data structures, as I am SO
+used to imperative languages. With Java or Python or C or possibly even
+Assembly, I stood a better chance to turning my thoughts into coherent code.
+Functional languages seem so limiting to me, and so for the first 4 days of
+working on this, I spent almost all of them writhing in confusion about how
+to approach it. However, I never left each day empty-handed, as I'd glean
+more and more ideas about how to work with the unitlists, how to work around
+the 'limitations' of Scheme, and how to alter my line of thinking.
+
+Not that any of it was easy, or even sensible. I started writing this note
+the 20th, and at the time of this section (12:21AM 2-22), I've had to rework
+nearly every function. Nothing was spared, not even my sanity. I've found a
+fatal flaw in that the units.dat does not have the base units of KG, M, SEC,
+and so my normalize and search-source functions are useless. I've tried to
+rework them for an hour before just giving up. Hardcoding in the three base
+units would prove to be insane, and there was no implementation that didn't
+result in catastrophic failure due to the code being too hard to follow.

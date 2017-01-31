@@ -1,0 +1,292 @@
+<head>
+<link href="../../stylesheets/defaults.css" rel="stylesheet" type="text/css"/>
+<title>
+CS 450 Homework 5
+</title>
+</head>
+
+<body>
+<b>
+CS 450 Homework 5
+</b>
+<br/>
+Bill Campbell (verbatim from Carl Offner)
+<br/>
+Spring 2016
+<p/>
+<p/>
+Due Sunday, March 20, 11:59 PM 
+
+<p>These exercises concern streams and delayed evaluation, and provide some
+practice using them in a remarkable and non-trivial example&#8212;computing the
+decimal digits of &pi;.</p>
+                                
+
+<p>Put your answers to these problems in the file <tt>pi.scm</tt> in
+your <tt>hw5</tt> directory.  This file should begin with some
+definitions from the textbook, which are included <a
+href="pi_header.scm">here</a>.  You should <b>copy</b> these
+definitions into the top of your file <tt>pi.scm</tt> (in addition to
+any other definitions you might find useful before starting the code
+for the various problems below).  This is important: <tt>pi.scm</tt>
+should not load any other file&#8212;it should be a self-contained file
+that contains any code it needs.</p>
+
+<p>Also, you should create a separate text file <tt>notes.txt</tt> to hold more
+extended discussions of the problems and the code you wrote.  (Of course, the
+code should still be commented in place.)</p>
+
+<p>If you use DrRacket for development, then you will find that
+<tt>cons-stream</tt> is not pre-defined for you.  Here's what you do:  put the
+following code at the top of your file:
+
+<pre>
+(define-syntax cons-stream
+  (syntax-rules ()
+    ((cons-stream head tail)
+     (cons head (delay tail)))))
+</pre>
+
+<b>But please be careful:</b>  This code does <b>not</b> work under UMB Scheme.
+So before you pass your paper in, please comment out this code.  Otherwise your
+entire paper won't work.  (In any case, you want to be sure you check your work
+with UMB Scheme, so if you have forgotten to do this, you will discover it this way.)</p>
+
+<p>There are five problems in this assignment.  The first three are fairly short
+and relatively easy.  The last two are each long and difficult.  They are based
+on an expository paper that you will find on my web
+site: <a href="http://www.cs.umb.edu/~offner/files/pi.pdf">Computing the Digits
+in &pi;</a>.  Actually, all you really need to read in that paper is Section 8,
+although you may be interested in looking at other parts as well But you will
+really need to read and understand all of Section 8.  (Well, you don't actually
+have to completely follow the two proofs in Sections 8.1.1 and 8.2.3, but you
+should at least read over those two sections to get an understanding of what is
+going on.)</p>
+
+<p>Section 8 of the paper is adapted from the paper ``Unbounded Spigot Algorithms
+for the Digits of Pi'', by Jeremy Gibbons, in the American Mathematical Monthly
+(Vol. 113, Number 4; April 2006).</p>
+
+<p>Please note: nowhere in the code for this assignment do you need to
+use <tt>set!</tt> or any other operator that changes the value of a variable.
+Sometimes informally, I write in the paper of "changing the value" of some
+variable.  What that always really means is a recursive call in which the new
+value is passed.  But no variable actually changes its value.</p>
+
+<p>Please be careful about this.  The whole point of this assignment is to use
+streams and recursion.  If you read what I have written here carefully and do
+what I suggest, I think you will be amazed at how simple and clear the code for
+these procedures is.</p>
+
+<ol>
+<li>
+Define a function
+
+<pre>
+(display-n stream n)
+</pre>
+
+that prints the first <tt>n</tt> elements of <tt>stream</tt>, each on
+a separate line.
+
+<li> Exercise 3.50 (page 324)
+
+<p>This exercise is pretty simple, provided you follow the suggestion in
+the book.  In fact, if you want, you can forget about checking for the
+empty stream&#8212;we will only use this procedure for infinite streams.</p>
+  
+<p>After you get this working (and test it), you should answer the
+following questions:</p>
+  
+<ol>
+<li>  What is the purpose of the <tt>apply</tt> and the
+<tt>cons</tt> in the last two lines of the procedure?  Why could you
+not just leave them out and replace the last two lines by the line
+
+<pre>
+       (stream-map proc (map <code><</code>??<code>></code>
+       argstreams))))
+</pre>
+
+<li> What about replacing the last two lines by this:
+
+<pre>
+       (apply stream-map proc (map <code><</code>??<code>></code>
+       argstreams))))
+</pre>
+
+</ol>
+
+<p>Please note: I'm not asking for answers such as "It works", or "It doesn't
+  work".  I'm looking for explanations.  And the explanations have to be
+  correct.  In the past, I have had students write things that not only were
+  wrong, but that they could easily have seen were wrong if they had just tried
+  them out.</p>
+
+<p> A good answer to this question will take some careful explaining.  And what
+  I wrote in an earlier assignment still holds: any explanation you give about
+  how Scheme works has to be based explicitly on the Scheme language definition
+  R5RS.  If it isn't, then the explanation is almost certainly wrong.</p>
+
+<li>
+As explained in section 3.5.2, we can define an infinite stream of
+ones and use this to define the stream of positive integers:
+
+<pre>
+(define ones (cons-stream 1 ones))
+
+(define integers (cons-stream 1 (add-streams ones integers)))
+</pre>
+
+<p>Type in these definitions and verify that they work by using the
+<tt>display-n</tt> procedure.  Generate the stream <tt>notdiv-235</tt>
+of all integers that are not divisible by any of the numbers 2, 3, or
+5.  (Use <tt>stream-filter</tt>.)</p>
+
+<li> Read all of Section 8.1 of the paper.
+
+<ol>
+
+<li> Before actually writing any code, finish filling in the table of
+  Figure 18.  (Put your table in <tt>notes.txt</tt>.)
+
+<li> Produce a function <tt>mult-stream</tt>, based on the explanation in
+  Section 8.1, that takes as input two arguments:
+
+<ul>
+
+<li> The first argument is a multiplier <tt>m</tt>, which is a positive integer.
+
+<li> The second argument is a stream <tt>strm</tt> of digits, representing the
+  digits in the decimal representation of a number between 0 and 1.  You may
+  assume that the number does not end in an infinite string of 9's.
+</ol>
+
+<p>The function <tt>mult-stream</tt> produces a stream which is the decimal
+representation of the product of <tt>m</tt> with the number represented
+by <tt>strm</tt>.  Don't worry about where the decimal point goes for this
+assignment.  (Of course, in practice that would be very important!  It's not at
+all hard to figure out, but it's not what I'm concerned about right here.)</p>
+
+<p>Somewhere in the course of doing this, you will probably need a function which
+you might want to name
+
+<pre>
+    number->list-of-digits
+</pre>
+
+which takes a non-negative integer as input and returns the list of single
+digits that make up the decimal representation of that integer.  There are
+various ways to do this.  One way is to use some of the built-in
+Scheme functions that operate on strings and characters, such as
+
+<pre>
+    number->string
+    string->list
+    char->integer
+</pre>
+
+If you do this, please be sure to notice that <tt>char->integer</tt> returns the
+ASCII value of a character, so if the character is "3", for instance, what is
+returned from <tt>char->integer</tt> is not the number 3.  So you'll have to
+adjust for that as well.</p>
+
+<li> Read all of Section 8.2 of the paper.
+
+<ol>
+
+<li> <p>On page 54, just before Section 8.2.1, it is stated that we could have
+  performed the sequence of computations there, but starting with a value
+  different from 2 and still got the same result (in the limit, of course).  Do
+  the computations starting with 3 instead of 2 and show that this seems to be
+  true.  (This isn't a proof, of course, right?)  Put this in
+  <tt>notes.txt</tt>.</p>
+
+  <p> And just to be completely clear about this:  when I talk about "starting
+  with 3 instead of 2", I'm talking about replacing only the rightmost 2 in the
+  expressions, not all of them.</p>
+  
+
+<li> Answer the following question (in <tt>notes.txt</tt>): What is the matrix
+  corresponding to the fractional linear transformation that takes x as input,
+  adds 3 to it, and then takes the reciprocal of the result?
+
+<li> In the middle of page 55 is a statement that you are invited to try to
+  prove.  Put your proof in <tt>notes.txt</tt>
+
+<li> Finally, based on what you have learned in this section, write a Scheme
+  procedure named pi, which takes no arguments, and which returns the stream of
+  decimal digits of &pi;; that is, the stream (3 1 4 1 5 9 ...).
+
+  <div id="narrow_emph_border">
+  
+  <p>Please be careful.  I want you to produce a <b><font
+  color=red>procedure</font></b> named pi, not a stream named pi.  The
+  procedure, when invoked, should produce a stream.</p>
+
+  </div>
+
+
+<p>To do this, you will need to have a representation for a 2x2 matrix.  A
+  simple list of 4 elements will do.  Write a constructor and selectors for
+  this.</p>
+  
+<p>You will also need a procedure to multiply matrices.  I suggest calling this
+  procedure <tt>compose</tt>, since "multiply" is overloaded enough as it
+  is.</p>
+  
+<p>You will need to produce the original input stream.  For a hint on how to do
+  this, look at how we produced the stream <tt>integers</tt> using
+  <tt>add-stream</tt>.  You will need to notice how each element of the stream
+  is produced from the previous one: you just add the matrix
+
+<pre>
+                   |  1  4  |
+                   |        |
+                   |  0  2  |
+</pre>
+  
+  to each element of the stream to get the next one.  (Make sure you understand
+  this.)  Just as the stream <tt>integers</tt> was produced from the initial
+  stream <tt>ones</tt>, you can build up the stream <tt>strm</tt> by starting
+  with the stream all of whose elements are this matrix, and you can construct
+  this stream in turn the same way as the stream <tt>ones</tt> was
+  constructed.</p>
+
+<p>That should enable you to produce <tt>strm</tt> recursively.  (You'll also
+  need a procedure to add matrices.  Remember that you add matrices by adding
+  corresponding elements.)</p>
+
+<li>In doing this assignment, you should not use floating-point computations.
+   And in fact there is no need to, because the only thing you really need to
+   deal with is integers.  In such a case, integer operations are both faster
+   and more accurate (because they are exact).  So in particular, you don't need
+   to use either of the functions <tt>/</tt> or <tt>floor</tt>.  In fact, <pre>
+   (quotient a b) </pre> is just the floor of <tt>a/b</tt>.  Isn't that
+   neat?</li>
+
+</ol>
+
+<center>
+<b>
+
+<hr/>
+
+The file <tt>notes.txt</tt>
+</b>
+</center>
+
+<p> Finally, a word about your <tt>notes.txt</tt> file.  I have asked some
+questions above, and I expect to see the answers in that file.  However, if that
+is all you put in that file, I will be very disappointed.  You don't want me to
+be disappointed.  I expect that you will learn a lot by doing this assignment.
+I expect you to write about that in notes.txt.</p>
+
+<p>Believe it or not, I have occasionally seen things like this:</p>
+
+<p><em>"I was confused at first.  But then I thought about it a lot, and now I
+understand it."</em></p>
+
+<p>I hope you understand that this sort of thing is useless.  It doesn't tell me
+or anyone else anything at all.  Please spend some serious time making your
+<tt>notes.txt</tt> file informative and useful.</p> </html>

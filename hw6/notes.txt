@@ -1,0 +1,77 @@
+--------------------------------------------------------------------------------
+        1
+
+s450 seems powerful, but lacks many functionailities regarding evaluation.
+It can define variables and lists, but cannot evaluate on them. (+ 3 4) returned
+a fatal error,. If I defined (define pairs (cons 0 (cons 1 2))), then
+(cdr (cdr pairs)) worked fine, but (cddr pairs) errored out. One interesting
+thing is that the enviroment stayed after an error - I could input (s450) into
+regular scheme and previous definitions would stay.
+
+I could define functions as well, such as (define (right x) (cdr x)) and
+(define (cddr x) (cdr (cdr x))), but it was very limited due to evaluation
+not working - I could not even do (= 2 2). Cond and If would never evaluate, but
+#t and #f worked - I know this because (not #t) and (not #f) work.
+
+(+ 3 4) worked once I hardcoded it in through editing (primitive-procedures),
+but I'm not sure how relevant that is to anything.
+
+--------------------------------------------------------------------------------
+        2
+
+For the lookup table, I just stole the one that we used in HW4, from lecture 9.
+Its infrastructure is known to me, and I didn't have to spend any time worrying
+if the implementation would bug out or something - it was reliable, and one
+less possibile point of failure.
+
+I had all installed special forms go into a 1d table, and had xeval lookup in
+that table - if found, it would act on that expression. If not, it would check
+for other expressions.
+
+--------------------------------------------------------------------------------
+        3
+
+-
+
+--------------------------------------------------------------------------------
+        4
+
+-
+
+--------------------------------------------------------------------------------
+        5
+
+Defined? and Unbound! made sense to me when I began to output an enviroment and
+got a sense of how it was structured. I quickly learned that an enviroment was
+a list of frames, with the first availible frame being the innermost frame in
+scope, descending down to the final frame, which was the global enviroment.
+
+Each frame was a cond - its car was a list of all variables, and its cdr was a
+list of the corresponding values. For any variable, all I had to do was to loop
+through the two frame lists at the same pace until I found the variable I was
+looking for, then I would also have its value.
+
+Defined? was simple in that I only had to do half of this loop. For any frame,
+I only had to loop through its variable list to see if the variable exists. For
+any enviroment, I just had to run this prior loop over all frames in the list.
+
+Locally-Defined? was just a simpler version of Defined?, with no need to loop
+over many frames.
+
+Unbound! ran the same loop as Defined?, but would check to see if the variable
+in question was Locally-Defined?. If so, it would run a helper function that
+parsed through the trees and removed the entry. If not, it would simply loop
+through the rest of the frames in the list.
+
+Much like how Locally-Defined? was just a simplier version of Defined?,
+Locally-Unbound! was just a simplier version of Unbound!. I just removed the
+loop, since it needs only concern itself with one frame.
+
+--------------------------------------------------------------------------------
+        6
+
+install-primitive-procedures make sense when I approached it with
+add-binding-to-frame!. I made the-global-enviroment initialize with an empty
+frame to begin with, and then implemented install-primitive-procedures
+to add-binding-to-frame! onto the-global-enviroment, such that these
+primitives would be visible globally.

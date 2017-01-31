@@ -1,0 +1,655 @@
+<head>
+<link href="../../stylesheets/defaults.css" rel="stylesheet" type="text/css"/>
+<title>
+CS 450 Homework 4
+</title>
+</head>
+
+<body>
+<b>
+CS 450 Homework 4
+</b>
+<br/>
+Bill Campbell (Verbatim from Carl Offner)
+<br/>
+Spring 2016
+<p/>
+<hr/>
+<p/>
+Due Sunday, March 6, collected electronically at 11:59 pm.
+
+<div id="narrow_emph_border">
+  
+  <p>The problems are collected electronically, as usual, with the exception of
+  Problems 2 and 5.  Problems 2 and 5 should be hand-written (unless you really
+  want to use some drawing tool, but I don't think that's worth the effort).
+  Those two problems can be handed in at the <b>beginning</b> of class on
+  Monday, March 7.  That means at 5:30 PM sharp -- not 5:35 PM.  I will
+  not accept either of these problems after the class has started.  If for some
+  reason you cannot be present when the class starts, make sure that these
+  problems are in my mailbox in the Math/CS office no later than 5:00 PM.</p>
+
+<!--   <p>Actually, if you can get problems 2 and 8 in to me earlier&#8212;say by -->
+<!--   scanning them in and emailing them to me, that would be better for all of us. -->
+<!--   But if you can't then you can hand them in on October 4.</p> -->
+
+  <p>Please note that problems 2 and 5 are exercises that show that you
+  understand the environment model.  To do this, you have to go back and do
+  <em>exactly</em> what we discussed in class.  If you just think you sort of
+  understand things and write down what seems to be correct, you will almost
+  certainly get these problems wrong.  Many students in the past have done just
+  that, and then they are astonished to find out that what they did makes no
+  sense at all.</p>
+
+  <p>There are two big parts to this assignment, and you will hand in three
+  files (electronically):</p>
+  <ul>
+    <li><b>ASanswers.scm</b>&#8212;this will contain the answers to Part 1
+    (except for the two drawings already mentioned above).</li>
+
+    <li><b>path.scm</b>&#8212;this will contain a Scheme program that solves
+    the problem of Part 2.</li>
+
+    <li><b>notes.txt</b>&#8212;This is the usual notes file.  You should have
+    something interesting and useful to say about these problems.  I will take
+    this very seriously.</li> </ul>
+
+</div>
+
+<!-- <center> -->
+<!-- Modified from an assignment of Prof. Bolker -->
+<!-- </center> -->
+
+<center>
+<b>
+Part 1:  Assignment, Local State, and the Environment Model
+</b>
+</center>
+
+
+<!-- <p>These exercises concern assignment, local state, and the environment model. -->
+<!-- That's a lot of new material. It will take getting used to.  You will find
+this -->
+<!-- material in Sections 3.1 and 3.2 of the text.</p> -->
+
+<p>There is a lot of new material here.  It will take getting used to.  You will
+find this material in Sections 3.1 and 3.2 of the text.</p>
+
+<p>Problems 2 and 5 should be written out on paper and handed in as
+described above.  Handwriting is fine, but <em>please</em> make them neat,
+clear, and easy to read.</p>
+
+<p>Put your answers to the rest of the problems in file
+<tt>ASanswers.scm</tt> in your new project directory
+<tt>.../cs450/hw4</tt>, with discussion when required as Scheme
+comments.  I will load and test your file, so be sure it's bug
+free. Anything that isn't yet working should be a stub or a comment.
+Any tests that you ran that are in this file should also be commented
+out.</p>
+
+<ol>
+<li>Rewrite the <tt>make-account</tt> procedure on page 223 so that it
+uses <tt>lambda</tt> more explicitly.  Create several versions, as
+follows. (<b>Important: please do exactly what each of the three
+following versions specifies; no more and no less.</b>)</li>
+
+<ol>
+<li><p>First version: First, replace
+
+<pre>
+    (define (make-account balance)
+     ...)
+</pre>
+by
+<pre>
+    (define make-account-lambda
+      (lambda ...
+       ...
+      )
+    )
+</pre>
+</p>
+
+<p>Then, for the first two internal procedure definitions, replace <tt>(define
+(proc args) ...)</tt> with <tt>(define proc (lambda (args) ...))</tt>.</p>
+
+<p>Finally, replace the
+
+<pre>
+    (define (dispatch ...)
+    ...
+    ...)
+    dispatch)
+</pre>
+
+construction with a lambda expression which is evaluated and returned (but of
+course not called).  As indicated above, call this procedure
+<tt>make-account-lambda</tt>.</p></li>
+
+<li>Second version: Start with a copy of the first version.  Then inline
+the internal procedures <tt>deposit</tt> and <tt>withdraw</tt>.  That
+is, replace references to them by the bodies of the procedures.  Then
+you can eliminate the definitions of those procedures.  Call this
+procedure <tt>make-account-inline</tt>.</li>
+
+<li>Third version (A little extra credit): Start with a copy of the second
+version.  I don't know how to say this without doing it for you, but
+you might then notice that a <tt>lambda</tt> can be factored out of
+the <tt>cond</tt> in your last version.  (If you don't know what I'm
+talking about here, just ignore this part of the problem.)  If you do
+this, call this new version
+<tt>make-account-inline-factored</tt>.</li>
+
+</ol>
+
+<p>Note that none of these three versions of <tt>make-account</tt>
+contains a <tt>dispatch</tt> procedure.</p></li>
+
+<li><p>In Exercise 3.11 (Page 251), Abelson and Sussman ask you to show
+how the environment model explains the behavior of make-account. Do
+that problem twice, once for the function <tt>make-account</tt> as A&S
+wrote it, with internal defines, and then again for the function
+<tt>make-account-lambda</tt> of problem 1.</p>
+
+<p>Notes:</p>
+
+<ul>
+<li>Please only draw two pictures -- one for <tt>make-account</tt> and
+one for <tt>make-account-lambda</tt>.  In spite of what the problem in
+the book says, please don't show in the picture how the deposit and
+withdrawal get made.  I just want you to show the picture after
+<pre>
+(define acc (make-account 50))
+</pre>
+has been evaluated.
+</li>
+
+<li> Please be careful: The two pictures you will draw are different.  Make sure
+you understand how they are different, and why.  This is a key point of the
+problem.</li>
+
+<li> I am looking for clarity here.  It's not my job to try to figure
+out what you have in mind.  You have to tell me.  Remember the main
+principle:  explain things to me as if I had no idea what was going
+on.</li>
+
+<li>The rest of the assignment is independent of the
+understanding called for here, so you can continue with the
+questions below before you have finished understanding the environment
+model.</li>
+</ul>
+
+<li> Exercise 3.2 (page 224).  Please read the statement of the problem very
+carefully.  It tells you precisely what you should do.  Please do exactly what
+it says.</li>
+
+
+<!-- <li>The <tt> make-monitored</tt> procedure you have just constructed can -->
+<!-- make a monitored version only of a procedure that accepts a single -->
+<!-- argument.  But it would be a nuisance to have to write a separate -->
+<!-- <tt>make-monitored-n</tt> for procedures accepting n arguments. And -->
+<!-- even if you did that you couldn't handle <tt>(make-monitored +)</tt> . -->
+<!-- With an explicit call to <tt>apply</tt> you can write a better -->
+<!-- make-monitored (call it <tt>better-make-monitored</tt>) that makes a -->
+<!-- monitored procedure for a procedure accepting any number of -->
+<!-- arguments. You will have to learn how to use <tt> apply</tt> -- read -->
+<!-- all about it in R5RS.</li> -->
+
+<li><p>Exercise 3.3 (page 225).
+
+<!-- Actually, I want to add to this problem a -->
+<!-- little, as follows: Let's say that the bank needs to have a way to -->
+<!-- check the validity of a password on such an account.  Here is how I -->
+<!-- suggest you do this:</p> -->
+
+<!-- <p>Modify a password account so that it takes a parameter -->
+<!-- <tt>'check-pw</tt> in place of the parameters <tt>'deposit</tt> and -->
+<!-- <tt>'withdraw</tt>.  The parameter <tt>'check-pw</tt> is used to check -->
+<!-- if a password is correct without performing any transaction on the -->
+<!-- account.  Thus, if -->
+
+<!-- <pre> -->
+<!--      (define acc (make-pw-account 100 'sicp)) -->
+<!-- </pre> -->
+
+<!-- then -->
+
+<!-- <pre> -->
+<!--      (acc 'sicp 'check-pw) ==> #t -->
+<!--      (acc 'pcis 'check-pw) ==> #f -->
+<!-- </pre> -->
+
+<!-- and -->
+
+<!-- <pre> -->
+<!--      ((acc 'sicp 'withdraw) 25)  withdraws 25 dollars from the account -->
+
+<!--      ((acc 'pcis 'withdraw) 25)  ignores the 25 and generates an -->
+<!--                                  error message like "Incorrect password". -->
+<!-- </pre> -->
+
+<!-- Thus, if the second argument to acc is the symbol <tt>'check-pw</tt>, -->
+<!-- the result is either <tt>#t</tt> or <tt>#f</tt>.</p> -->
+
+<!-- <p>In any other case, the result is a function that takes one argument. -->
+<!-- In that case, if the password is correct, that function does what it's -->
+<!-- supposed to do.  If the password is incorrect, however, the function -->
+<!-- ignores its argument and just generates an error message. -->
+<!-- (Note that this would be impossible in a strongly-typed language, -->
+<!-- where -->
+<!-- <tt>(acc ...)</tt> would always have to return a function object.)</p> -->
+
+<!-- <p>I probably won't actually test this additional capability in this -->
+<!-- problem.  However, you will need this password checking capability -->
+<!-- when you do the next problem.</p> -->
+
+<p>In doing this problem, build on your solution to Problem 1. In fact,
+see if you can use one of your solutions to Problem 1 as a "black box"
+-- that is, make the solution to this problem a "wrapper" procedure
+that just invokes one of the versions of make-account from Problem 1,
+after handling password checks.  In this way, you don't have to copy
+any of the body of the original make-account procedure.  (It isn't
+necessary that you do it this way -- this is just a suggestion.)</p>
+
+<p>Call your new function <tt>make-pw-account</tt>.  And yes, I really meant
+this&#8212;note that this is different from what the book says.</p>
+
+<!-- <li>Exercise 3.7 (page 236).  The way you should interpret the -->
+<!-- specification for this problem is that the original password works -->
+<!-- only on the original account, and the new password works only on the -->
+<!-- new account (which is really a joint account with the original -->
+<!-- account).  So for instance, if we have<br/> -->
+
+<!-- <tt>(define acc1 (make-pw-account 100 'pw1))</tt><br/> -->
+<!-- <tt>(define acc2 (make-joint acc1 'pw1 'pw2))</tt><br/> -->
+
+<!-- then<br/> -->
+
+<!-- <tt>((acc1 'pw1 'deposit) 10)</tt> still works, and<br/> -->
+<!-- <tt>((acc2 'pw2 'deposit) 10)</tt> also works, but<br/> -->
+<!-- <tt>((acc1 'pw2 'deposit) 10)</tt> does not work, and<br/> -->
+<!-- <tt>((acc2 'pw1 'deposit) 10)</tt> does not work. -->
+<!-- </li> -->
+
+<!-- <li>Exercise 3.8 (page 236). You should not use any global variables in your -->
+<!-- code for this.  How will you test your answer?</li> -->
+
+<li>
+<p>Exercise 3.9 (page 243).  Let's make it simpler, however: show how to
+compute <tt>(factorial 3)</tt> (rather than <tt>(factorial
+6)</tt>).</p>
+
+<p>Be sure to read the footnote.  And follow the construction that I gave in
+class <em>exactly</em>.  You may think the pictures should look different.  And
+if something bothers you about how the pictures look, you should write about it
+in your <tt>notes.txt</tt> file.  But the construction that I specified is
+actually what happens internally.  You will have to understand it for later
+assignments.</p></li>
+
+</ol>
+
+<center>
+<b>
+Part 2:  Dynamic Programming and the Remarkable Effectiveness of Memoization
+</b>
+</center>
+
+<p><b>Statement of the problem:</b></p>
+
+<p>Here is a problem:  we are given a weighted DAG&#8212;that is, a directed
+acyclic graph with a weight on each edge.  You can assume that all the weights
+are non-negative.  One of the nodes is called <tt>start</tt> and another is
+called <tt>end</tt>.  There are paths through the graph from <tt>start</tt> to
+<tt>end</tt>.  Each path has a <tt>cost</tt>&#8212;this cost is the sum of the
+weights on edges that make up the path.  The problem is to find a path of
+minimal cost from <tt>start</tt> to <tt>end</tt>.</p>
+
+<p>Note that there might be more than one path of minimal cost.  We only have to
+find one of them.  And we are guaranteed that there is at least one path from
+<tt>start</tt> to <tt>end</tt>.</p>
+
+<p>You can think of this as a simplified form of the kind of problem that is
+solved all the time by Google maps or by a GPS device in your car: What's the
+best way to get from one point to another?</p>
+
+<p><b>This problem is computationally expensive!</b></p>
+
+<p>One way to approach this would be to write a recursive routine which walked
+the graph starting at <tt>start</tt> and explored all paths, stopping each path
+when <tt>end</tt> was reached, and keeping track of the cost of each path.</p>
+
+<p>This would certainly work, because there is only a finite number of paths
+from <tt>start</tt> to <tt>end</tt>.</p>
+
+<p>On the other hand, the number of such paths could easily be so great that the
+program would take an inordinate amount of time to complete.</p>
+
+<p>Think, for example, of a hypercube of dimension <tt>n</tt>.  How many
+vertices does it have?  Can you figure out how many paths are there from one
+vertex to the "opposite" one?  Can you draw any conclusion from this?  (This
+question may be more sophisticated than it seems.  Don't spend a huge amount of
+time on it.)</p>
+
+<p><b>An idea that can be used to simplify the computation</b></p>
+
+<p>On the other hand, even though there can be an absolutely huge number of
+paths from <tt>start</tt> to <tt>end</tt>, many of them quite likely overlap.
+For instance, suppose we have two paths like this:<p>
+
+<pre>
+    start &rarr; a &rarr; b &rarr; &hellip; &rarr; <font color=blue>p &rarr; &hellip; &rarr; t &rarr; end</font>
+    start &rarr; x &rarr; y &rarr; &hellip; &rarr; <font color=blue>p &rarr; &hellip; &rarr; t &rarr; end</font>
+</pre>
+
+<p>which start out differently but from point <tt>p</tt> on are the same.  Then
+if we know the cost of the sub-path
+<pre>
+                        <font color=blue>p &rarr; &hellip; &rarr; t &rarr; end</font>
+</pre>
+then we can compute the cost of each of the original paths with less effort,
+because we only needed to compute the cost of that sub-path once.  We'll come
+back to this later.</p>
+
+<p><b>How the data is input</b></p>
+
+<p>Before we go on, let me explain how the data will be input to the program you
+are going to write.  There will be a file containing the specification of the
+graph.  The name of the file will be <tt>dist.dat</tt>.  That's it.  You can't
+use any other file name.  This is just to make things simple (even at the cost
+of being a bit user-unfriendly).  Please don't try to change this.</p>
+
+<p>A typical (but very small) <tt>dist.dat</tt> file might look like this:</p>
+
+<pre>
+(start p1 3)
+(start p2 7)
+(p1 p2 1)
+(p2 end 11)
+(p1 end 22)
+</pre>
+
+<p>Each line in the file looks like a Scheme list.  Each line represents an edge
+in the graph.  The first two elements in the list are the source and the target
+of the edge, in that order.  The last element of the list&#8212;which is always
+a non-negative integer&#8212;is the weight of that edge.</p>
+
+<p>Before going any farther, you should draw a picture of this graph for
+yourself.  (Don't hand it in.)  You should be able to see that the shortest path
+from <tt>start</tt> to <tt>end</tt> has cost 15.</p>
+
+<p>Don't make any assumptions about the order in which these edges are placed in
+the file.  For instance, this would describe exactly the same graph:</p>
+
+<pre>
+(p2 end 11)
+(start p2 7)
+(p1 p2 1)
+(start p1 3)
+(p1 end 22)
+</pre>
+
+<p>And for that matter, the nodes (with the exception of <tt>start</tt> and
+<tt>end</tt>) could have any names, in any order.  So this would also really be
+the same graph, with the internal nodes renamed:</p>
+
+<pre>
+(p1 end 11)
+(start p1 7)
+(p2 p1 1)
+(start p2 3)
+(p2 end 22)
+</pre>
+
+<p>It also might be that there are other "initial" or "final" nodes in
+the graph.  For instance, you might have something like this:</p>
+
+<pre>
+(start p1 3)
+(p0 p1 2)
+(start p2 7)
+(p1 p2 1)
+(p2 end 11)
+(p2 p3 1)
+(p5 p6 3)
+(p1 end 22)
+</pre>
+
+<p>But in any case, there will always be one or more paths from <tt>start</tt>
+to <tt>end</tt>, and it is <em>only</em> those paths that we care about.<p>
+
+<p>Also note that between any two nodes in the graph, there is either no edge,
+or there is 1 edge.  There is never more than 1 edge.</p>
+
+<p><b>Reading in the graph</b></p>
+
+<p>As in the previous assignment, you can use the following code to read in the
+graph:</p>
+
+<pre>
+  ;; read-file produces a list whose elements are the expressions in the file.
+
+  (define (read-file)
+    (let ((expr (read)))
+      (if (eof-object? expr)
+          '()
+          (cons expr (read-file)))))
+
+  ;; Here we go:  read in the file that defines the graph
+
+  (define data (with-input-from-file "dist.dat" read-file))
+</pre>
+
+<p>This will give you a variable named <tt>data</tt> that holds a list the
+elements of which are just the lines in the file <tt>dist.dat</tt>.</p>
+
+<p><b>Building the main lookup table</b></p>
+
+<p>The next thing you will need to do is to build a lookup table.  This table
+should enable you to implement a lookup function (in fact, let's call it
+<tt>lookup</tt>) that takes the names of two nodes in the graph (like
+<tt>start</tt> and <tt>p2</tt>, for instance).  If these two nodes are not the
+source and the target (in that order) of an edge, this function should evaluate
+to <tt>#f</tt>.  Otherwise, it should evaluate to the cost of that edge.</p>
+
+<p>We talked in class about how to build lookup tables (and the same thing is in
+the textbook, in section 3.3.3).  In this case, we are talking about a
+two-dimensional table, right?  You should use the method we talked about in
+class.</p>
+
+<p><b>A naive way to solve our problem</b></p>
+
+<p>A straightforward but naive way to solve our problem would just be via a
+depth-first walk of the graph, starting at the <tt>start</tt> node.  Pseudo-code
+for this might look something like this.  (Bear in mind that this pseudo-code is
+not really "pseudo-Scheme", but it could be easily translated into it.):</p>
+
+<pre>
+procedure cost(node) // returns an integer
+  if the node has no children, return "infinity".
+  for each child of node
+    if child is "end"
+      just compute (lookup node child)
+    else
+      compute (lookup node child) + cost(child)
+  return the minimum of those computed values
+</pre>
+
+<p>Here "infinity" just means some number that is so big that it couldn't
+possibly be the value of any path.  You can use the number 1000000 (i.e., 1
+million) if you want&#8212;I guarantee that I won't try your code out on any
+graphs with weights that could possibly add up to a million.  And of course any
+graphs that you make up should satisfy the same constraint.  That shouldn't be
+hard.</p>
+
+<p>I suggest implementing this.  It's quite easy, and it will give you some
+practice in specifying graphs and convincing yourself that you understand what
+is going on.  Of course you want to make sure that what you get back is what you
+think you <em>should</em> get back.</p>
+
+<p><b>Why does this method work?</b></p>
+
+<p>This method, which is quite simple, works for a reason which is actually
+pretty sophisticated: Suppose that we have a path <tt>P</tt> from <tt>start</tt>
+to <tt>end</tt>, and suppose <tt>P</tt> passes at some point through a node
+<tt>p</tt>.  And suppose the cost of this path is minimal&#8212;that is, there
+is no other path from <tt>start</tt> to <tt>end</tt> with lower cost.  <em>Then
+the part of this path (call it <tt>Pp-end</tt>) starting from <tt>p</tt> and
+going all the way to <tt>end</tt> must also be minimal</em>, in the sense that
+there is no other path <tt>S</tt> from <tt>p</tt> to <tt>end</tt> whose cost is
+smaller than the cost of <tt>Pp-end</tt>.</p>
+
+<p>Why is this?  The reason is this: suppose there <em>was</em> a path
+<tt>S</tt> from <tt>p</tt> to <tt>end</tt> whose cost was less than the cost of
+<tt>Pp-end</tt>.  Then we could make a new path as follows:</p>
+
+<p>Follow the original path <tt>P</tt>from <tt>start</tt> to <tt>p</tt>.  Then,
+instead of continuing on <tt>Pp-end</tt>, follow <tt>S</tt> from <tt>p</tt> to
+<tt>end</tt>  This new path from <tt>start</tt> to <tt>end</tt> will have a cost
+strictly less than the cost of <tt>P</tt>, which is of course a contradiction,
+since we started out by assuming that the cost of <tt>P</tt> was minimal.</p>
+
+<p>Thus we have proved that if <tt>P</tt> is a minimal-cost path from
+<tt>start</tt> to <tt>end</tt>, then the sub-path of <tt>P</tt> from any node
+<tt>p</tt> to <tt>end</tt> is also a minimal-cost path from <tt>p</tt> to
+<tt>end</tt>.</p>
+
+<p>And that's why the algorithm above works.  At each stage we take the minimal
+cost of any path from the children of <tt>node</tt> and put it together with the
+cost to each child.  We are thus guaranteed to get the minimal cost from the
+<tt>node</tt> itself.</p>
+
+
+<p><b>The real way to solve our problem</b></p>
+
+<p>However, as we have already mentioned, this algorithm is just too costly to
+run on large graphs.  And the reason is that we can end up computing the same
+information (for common sub-paths) many times.  But based on the discussion
+above, we can get around this difficulty by making sure that we compute the cost
+of each path just once.  We do this by a process called <b><font
+color=blue>memoization</font></b>.
+
+<div id="narrow_emph_border">
+  
+  <p>Please be careful.  There is another word, "<font color=blue>memo<font
+  color=red><b>r</b></font>ization</font>" that you probably know.  That's a
+  different word.  The word "<font color=blue>memoization</font>" (without the
+  "<font color=red><b>r</b></font>") is used only in Computer Science.  Every
+  computer scientist knows what it means, and almost no one else does.  We just
+  have to live with that.  The words are clearly related, but they mean
+  different things, so you do have to be careful.</p>
+
+</div>
+
+<p>The idea is simple:  we keep a table of costs.  For each node, when we compute
+the cost of that node, we enter that node and its cost in the table.  Then every
+time after that, when we want to compute the cost of the node, we first look it
+up in that table.  If it's there, then we know the cost.  Otherwise, we compute
+it and put it and its cost in the table.</p>
+
+<p>In effect we are making a "memorandum" (or "memo") of the cost of each node
+as we compute it.  That's where the term "memoize" comes from.</p>
+
+<p>This use of memoization, which is made possible by the "minimal sub-paths"
+property we proved above, is called <b>dynamic programming</b>.  Dynamic
+programming is one of the most powerful techniques of algorithm construction.
+It's tremendously useful.</p>
+
+<p>You should implement this.  In doing this you will want to be very careful
+that you really are not redoing computations that can be memoized.</p>
+
+<p>You may find that you need (or want) to have several tables.  That's fine.
+Do what you need to do, and please explain your decisions in
+<tt>notes.txt</tt></p>
+
+<p><b>The final version</b></p>
+
+<p>Finally, we would like to print out, not only the minimal cost of getting
+from <tt>start</tt> to <tt>end</tt>, but also a path that has that minimal
+cost.  (Remember that there might me more than one minimal path.  That's OK; we
+only care about one, and it doesn't matter which one.)</p>
+
+<p>To do this, you will also need to memoize a shortest path from each node to
+<tt>end</tt>.  In principle, this is not at all hard to do, but you will need to
+be careful.<p>
+
+<p>I'm sure you will need some helper functions in doing all this.  And will
+also undoubtedly need some more tables.  Be sure to put in comments so that your
+code is reasonably explanatory.  When I did this, I had functions that returned
+data structures&#8212;not just simple numbers or lists.  You will want to
+document that as well.</p>
+
+<p>How should the result be printed out?  I would like you to print out the
+result like this.  Suppose you have read in the original graph I gave as an
+example above.  Then your file&#8212;which we're calling <tt>path.scm</tt>
+should be able to be executed by simply typing</p>
+
+<pre>
+scheme < path.scm
+</pre>
+
+<p>at the Unix prompt.  It should print out</p>
+
+<pre>
+(8 start p1 p2 end)
+</pre>
+
+<p>In other words, you don't call <tt>cost</tt> or any other Scheme function
+from the Unix command line.  You just read in <tt>path.scm</tt>, as I indicated
+above::</p>
+
+<pre>
+scheme < path.scm
+</pre>
+
+<p>This will evaluate every Scheme expression in the file and display the
+result.  Of course, that's not what you want.  So package up the file as one big
+<tt>(begin ...)</tt> special form, and make it so that the last thing evaluated
+in the <tt>(begin ...)</tt> is what you want displayed.  That is, the last
+expressionin the <tt>(begin ...)</tt> expression should be</p>
+
+<pre>
+   (cost 'start)
+</pre>
+
+<p>Please be sure to do this.  This is the way I'm going to test your code.  If
+your interface is different in any way, my tests will fail.</p>
+
+<p>Finally, I expect to see a serious discussion in your <tt>notes.txt</tt> file
+of the design decisions you made, any difficulties you ran into, how you
+resolved them, what you would do differently, and so on.  This is important, and
+I plan to take this very seriously.  So don't leave it till the end, and don't
+blow it off.</p>
+
+<p><b>A moderate-sized test case</b></p>
+
+<p>Although in developing your program you will certainly want to work with very
+small graphs that you make yourself, so that you can debug your code easily, you
+might like to have a somewhat larger graph to test your code on.  I have put a
+graph <tt>dist.dat</tt> in &#126;offner/cs450/hw4.  You can certainly feel free
+to use it.  You should find that the minimum-length path from <tt>start</tt> to
+<tt>end</tt> in that graph has length 169.</p>
+
+
+<div id="narrow_emph_border">
+  
+  <p>One final warning.  There are other algorithms that might be used to solve
+  this problem.  But I want you to use the approach I have given here, which is
+  one based on dynamic programming.  So poking around the internet or Wikipedia
+  &#8212;or anywhere else, really&#8212isn't going to help at all.  You may find
+  another algorithm.  But it won't be any easier or more efficient than this
+  one, and in any case, a big point of this problem is to understand this kind
+  of algorithm, which is extremely important in computer science.  If you have a
+  question understanding what I've written here, you should ask me.</p>
+
+  <p>If you use another approach, I'm not even going to look at it.</p>
+
+  <p>Of course, there are design decisions that you will make as you implement
+  this, and different people will do things somewhat differently.  That's
+  perfectly OK, and in fact I would expect that.  That's not what I'm talking
+  about here.  If you're uncertain what I mean in this all, please just send me
+  email.</p>
+
+</div>
+
+
+</html>

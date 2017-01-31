@@ -1,0 +1,30 @@
+I shamefully admit that these few weeks have been a particularly hectic one, and
+I didn't put as much work into this assignment as I should have. I usually work on
+assignments based on what deadline is closest, and that ended up with Scheme
+getting pushed back.
+
+But hey, enough excuses, I came here to program Scheme. The first part seemed easy
+enough but I admit this may just be due to me not knowing enough of the diagrams
+to know what should have been easy and what should have been hard. I gave it my
+best shot and I suppose that is really all I can do.
+
+It took a little bit of figuring out what the lookup was meant to be used for but
+Micah's question on Piazza ended up being a big help in goading me away from
+simply using it to parse over data - with a bit of tinkering around with it, I
+realized that it was perfect for the memoization of the minimal costs between two
+nodes, and keeping track of that minimal path.
+
+I managed to get the base framework up and running - (cost 'start) will return 15
+on the first dist.dat test case that was given to us. This is all without any
+memoization, and no use from the 1d table just yet. I also haven't been able to
+find a way to track the actual path that it takes from start to end, since I
+simply map a min over the list of node children.
+
+I wanted to tackle the path first before I tackled the memoization, but figured
+that it might be smarter to do it the other way around, since they were relatively
+seperate bits of code, and memoization would give me more to work with. I started
+the memoization process by having all lookups on the 2d table first consult the
+1d table of memoized nodes - which for now, is none of them. Actually memoizing
+the nodes is a different story altogether.
+
+

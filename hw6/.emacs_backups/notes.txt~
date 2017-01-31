@@ -1,0 +1,47 @@
+--------------------------------------------------------------------------------
+        1
+
+s450 seems powerful, but lacks many functionailities regarding evaluation.
+It can define variables and lists, but cannot evaluate on them. (+ 3 4) returned
+a fatal error,. If I defined (define pairs (cons 0 (cons 1 2))), then
+(cdr (cdr pairs)) worked fine, but (cddr pairs) errored out. One interesting
+thing is that the enviroment stayed after an error - I could input (s450) into
+regular scheme and previous definitions would stay.
+
+I could define functions as well, such as (define (right x) (cdr x)) and
+(define (cddr x) (cdr (cdr x))), but it was very limited due to evaluation
+not working - I could not even do (= 2 2). Cond and If would never evaluate, but
+#t and #f worked - I know this because (not #t) and (not #f) work.
+
+(+ 3 4) worked once I hardcoded it in through editing (primitive-procedures),
+but I'm not sure how relevant that is to anything.
+
+--------------------------------------------------------------------------------
+        2
+
+For the lookup table, I just stole the one that we used in HW4, from lecture 9.
+Its infrastructure is known to me, and I didn't have to spend any time worrying
+if the implementation would bug out or something - it was reliable, and one
+less possibile point of failure.
+
+
+
+--------------------------------------------------------------------------------
+        3
+
+kek
+
+--------------------------------------------------------------------------------
+        4
+
+kek
+
+--------------------------------------------------------------------------------
+        5
+
+kek
+
+--------------------------------------------------------------------------------
+        6
+
+kek
